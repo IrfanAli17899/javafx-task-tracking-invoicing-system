@@ -1,5 +1,7 @@
 package app.controllers;
 
+import app.model.User;
+import app.utils.LocalStorage;
 import app.utils.UtilsClass;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -8,10 +10,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 
-import java.io.IOException;
 import java.net.URL;
+import java.sql.ResultSet;
 import java.util.ResourceBundle;
-import java.util.prefs.Preferences;
 
 public class LoginController implements Initializable {
     @FXML
@@ -33,12 +34,18 @@ public class LoginController implements Initializable {
     }
 
     @FXML
-    public void signin(ActionEvent event) throws IOException {
-        errorMessage.setText("");
-        String email = EmailInput.getText();
-        String password = PasswordInput.getText();
-        UtilsClass.navigate(SigninButton,getClass().getResource("../fxml/dashboard.fxml"));
-//        UtilsClass.executeQuery("SELECT * FROM users WHERE email='email' and password='password'");
+    public void signin(ActionEvent event) {
+        try {
+            errorMessage.setText("");
+            ResultSet rs = UtilsClass.executeQuery(String.format("SELECT * FROM users WHERE email='%s' and password='%s'", EmailInput.getText(), PasswordInput.getText()));
+            if(rs.next()){
+                LocalStorage.getInstance().setUser(new User(rs.getInt("id"), rs.getString("username")));
+                UtilsClass.navigate(SigninButton,getClass().getResource("../fxml/dashboard.fxml"));
+            }
+            errorMessage.setText("Please Provide Valid Credentials");
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
 }

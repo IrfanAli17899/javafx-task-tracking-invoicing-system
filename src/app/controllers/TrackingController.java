@@ -1,6 +1,7 @@
 package app.controllers;
 
 import app.model.Task;
+import app.utils.LocalStorage;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcons;
 import javafx.collections.FXCollections;
@@ -11,6 +12,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class TrackingController implements Initializable {
@@ -36,7 +38,8 @@ public class TrackingController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         createTable();
-        setRow("Test");
+        loadTable();
+//        setRow("Test");
     }
 
     @FXML
@@ -47,6 +50,16 @@ public class TrackingController implements Initializable {
             taskInput.setText("");
         }
     }
+
+    private void loadTable(){
+        ArrayList<Task> tasksFetched = LocalStorage.getInstance().getAllTasks();
+        for (Task t: tasksFetched) {
+            t.setAction(createButton());
+            t.setCheck(new CheckBox());
+            tasks.add(t);
+        }
+        task_table.setItems(tasks);
+    };
 
     private void handlePlay(){
 
@@ -69,7 +82,7 @@ public class TrackingController implements Initializable {
     }
 
     private void setRow(String title){
-        tasks.add(new Task(title,"00:00:00",createButton(),new CheckBox()));
+        tasks.add(new Task(title,"00:00:00", createButton(),new CheckBox()));
         task_table.setItems(tasks);
     }
 }

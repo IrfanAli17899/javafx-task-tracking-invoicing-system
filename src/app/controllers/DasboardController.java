@@ -1,5 +1,9 @@
 package app.controllers;
 
+import app.model.Task;
+import app.model.User;
+import app.utils.LocalStorage;
+import app.utils.UtilsClass;
 import javafx.animation.FadeTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -13,6 +17,7 @@ import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
 import java.net.URL;
+import java.sql.ResultSet;
 import java.util.ResourceBundle;
 
 public class DasboardController implements Initializable {
@@ -24,9 +29,7 @@ public class DasboardController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-         loader();
-
-
+         loadpage("tracking");
     }
 
     private void loader(){
@@ -34,7 +37,6 @@ public class DasboardController implements Initializable {
         fade(image.getParent());
         main.getChildren().add(image);
     }
-
 
     @FXML
     private void handleNavigation(ActionEvent event){
@@ -56,12 +58,25 @@ public class DasboardController implements Initializable {
         transition.play();
     }
 
+    private void getPageData(String page){
+        try{
+        User user = LocalStorage.getInstance().getUser();
+        switch (page){
+            case "tracking":
+                ResultSet rs = UtilsClass.executeQuery(String.format("SELECT * FROM tasks WHERE user_id=%s AND invoiced=0", user.getId()));
+                while (rs.next()){
+                    LocalStorage.getInstance().addTask(new Task(rs.getString("title"),rs.getString("hrs"),null,null));
+                }
+        }
+        }catch (Exception e){}
+    }
+
 
     private void loadpage(String page) {
-        Parent root = null;
-            System.out.println(page);
-            loader();
         try {
+            loader();
+            getPageData(page);
+            Parent root = null;
             FXMLLoader loader = new FXMLLoader(getClass().getResource("../fxml/"+page+".fxml"));
             root = loader.load();
             main.getChildren().clear();

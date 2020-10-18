@@ -28,4 +28,16 @@ public class Task {
         return check;
     }
 
+    public void setAction(Button action) {
+        this.action = action;
+    }
+
+    public void setCheck(CheckBox check) {
+        this.check = check;
+    }
+
+    public void setHrs(String hrs) {
+        this.hrs = hrs;
+    }
+
 }
