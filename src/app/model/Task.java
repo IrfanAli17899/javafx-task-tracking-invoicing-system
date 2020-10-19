@@ -4,12 +4,15 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 
 public class Task {
+    int id;
     String title;
     String hrs;
     Button action;
     CheckBox check;
+    Boolean running = false;
 
-    public Task(String title, String hrs, Button action, CheckBox check){
+    public Task(int id, String title, String hrs, Button action, CheckBox check){
+        this.id = id;
         this.title = title;
         this.hrs = hrs;
         this.action = action;
@@ -40,4 +43,7 @@ public class Task {
         this.hrs = hrs;
     }
 
+    public int getId() {
+        return id;
+    }
 }

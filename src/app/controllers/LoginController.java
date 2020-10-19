@@ -30,14 +30,15 @@ public class LoginController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
+        EmailInput.setText("programmer.17899@gmail.com");
+        PasswordInput.setText("123456");
     }
 
     @FXML
     public void signin(ActionEvent event) {
         try {
             errorMessage.setText("");
-            ResultSet rs = UtilsClass.executeQuery(String.format("SELECT * FROM users WHERE email='%s' and password='%s'", EmailInput.getText(), PasswordInput.getText()));
+            ResultSet rs = UtilsClass.executeDB(String.format("SELECT * FROM users WHERE email='%s' and password='%s'", EmailInput.getText(), PasswordInput.getText()),false);
             if(rs.next()){
                 LocalStorage.getInstance().setUser(new User(rs.getInt("id"), rs.getString("username")));
                 UtilsClass.navigate(SigninButton,getClass().getResource("../fxml/dashboard.fxml"));

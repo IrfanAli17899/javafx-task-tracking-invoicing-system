@@ -60,12 +60,15 @@ public class DasboardController implements Initializable {
 
     private void getPageData(String page){
         try{
-        User user = LocalStorage.getInstance().getUser();
+        LocalStorage localStorage = LocalStorage.getInstance();
+        User user = localStorage.getUser();
         switch (page){
             case "tracking":
-                ResultSet rs = UtilsClass.executeQuery(String.format("SELECT * FROM tasks WHERE user_id=%s AND invoiced=0", user.getId()));
-                while (rs.next()){
-                    LocalStorage.getInstance().addTask(new Task(rs.getString("title"),rs.getString("hrs"),null,null));
+                if (localStorage.getAllTasks().size()==0){
+                    ResultSet rs = UtilsClass.executeDB(String.format("SELECT * FROM tasks WHERE user_id=%s AND invoiced=0", user.getId()),false);
+                    while (rs.next()){
+                        localStorage.addTask(new Task(rs.getInt("id"),rs.getString("title"),rs.getString("hrs"),null,null));
+                    }
                 }
         }
         }catch (Exception e){}

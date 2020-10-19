@@ -1,5 +1,9 @@
 package app.controllers;
 
+import java.text.DateFormatSymbols;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.sql.ResultSet;
 import java.time.LocalDate;
 
 import static java.time.DayOfWeek.MONDAY;
@@ -7,7 +11,8 @@ import static java.time.DayOfWeek.SUNDAY;
 import static java.time.temporal.TemporalAdjusters.nextOrSame;
 import static java.time.temporal.TemporalAdjusters.previousOrSame;
 
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcons;
+import app.utils.LocalStorage;
+import app.utils.UtilsClass;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.BarChart;
@@ -18,7 +23,6 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 
 import java.net.URL;
-import java.util.ResourceBundle;
 
 public class ReportsController implements Initializable {
     int week = 0;
@@ -27,8 +31,8 @@ public class ReportsController implements Initializable {
     LocalDate sunday = today.with(nextOrSame(SUNDAY));
 
     final static String[] days = {"Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"};
-    final static double[] hrs1 = {4,5,3,6,8,2,7,3};
-    final static double[] hrs2 = {3,2,5,8,3,5,6,7};
+    final static double[] hrs1 = {0,0,0,0,0,0,0,0};
+//    final static double[] hrs2 = {3,2,5,8,3,5,6,7};
     final CategoryAxis xAxis = new CategoryAxis();
     final NumberAxis yAxis = new NumberAxis();
     final BarChart<String,Number> bc = new BarChart<String,Number>(xAxis,yAxis);
@@ -43,8 +47,29 @@ public class ReportsController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
     initializeChart();
-    weekText.setText(this.monday+" - "+this.sunday);
-    setData(hrs1);
+    weekText.setText(this.monday+" - "+ this.sunday);
+    getUserLoggedInTime();
+//    setData(hrs1);
+    }
+
+    public void getUserLoggedInTime(){
+        try{
+            LocalStorage localStorage = LocalStorage.getInstance();
+            ResultSet rs = UtilsClass.executeDB(String.format("SELECT * FROM times WHERE user_id=%s AND date BETWEEN '%s' AND '%s'",
+                    localStorage.getUser().getId(),this.monday,this.sunday),false);
+            double[] hrs = new double[7];
+            while (rs.next()){
+            String[] dateStr = rs.getDate("date").toString().split("-");
+                System.out.println(dateStr);
+            LocalDate cal = LocalDate.of(Integer.parseInt(dateStr[0]),Integer.parseInt(dateStr[1]),Integer.parseInt(dateStr[2]));
+            hrs[cal.getDayOfWeek().getValue() - 1] += 10;
+        }
+            setData(hrs1);
+        setData(hrs);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     private void setDate(String type){
@@ -65,7 +90,7 @@ public class ReportsController implements Initializable {
     private void prev(){
         week--;
         setDate("prev");
-        setData(hrs2);
+        getUserLoggedInTime();
     }
 
     @FXML
@@ -73,7 +98,7 @@ public class ReportsController implements Initializable {
     if (week<0){
         week++;
         setDate("next");
-        setData(hrs2);
+        getUserLoggedInTime();
     }
     }
 
