@@ -80,3 +80,13 @@
 .data7.chart-bar{
     -fx-bar-fill: "#A47D7C"
 }
+
+#GoSigninButton{
+    -fx-background-color: transparent;
+    -fx-text-fill: #444;
+}
+
+#GoSignup{
+    -fx-background-color: transparent;
+    -fx-text-fill: #444;
+}

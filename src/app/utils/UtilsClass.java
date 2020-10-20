@@ -38,10 +38,14 @@ public final class UtilsClass {
     }
 
     public static void navigate(Node node, URL path) throws IOException {
+        try{
         FXMLLoader loader = new FXMLLoader(path);
         Stage stage = (Stage) node.getScene().getWindow();
         Scene scene = new Scene(loader.load());
         stage.setScene(scene);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public static long timeToSec(String time){

@@ -14,9 +14,12 @@ import java.net.URL;
 import java.sql.ResultSet;
 import java.util.ResourceBundle;
 
-public class LoginController implements Initializable {
+public class SignupController implements Initializable {
     @FXML
-    private Button SigninButton;
+    private Button SignupButton;
+
+    @FXML
+    private TextField Username;
 
     @FXML
     private TextField EmailInput;
@@ -30,18 +33,17 @@ public class LoginController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        EmailInput.setText("programmer.17899@gmail.com");
-        PasswordInput.setText("123456");
+
     }
 
     @FXML
-    public void signin(ActionEvent event) {
+    public void signup(ActionEvent event) {
         try {
             errorMessage.setText("");
-            ResultSet rs = UtilsClass.executeDB(String.format("SELECT * FROM users WHERE email='%s' and password='%s'", EmailInput.getText(), PasswordInput.getText()),false);
+            ResultSet rs = UtilsClass.executeDB(String.format("INSERT INTO users (email,username,password) VALUES ('%s','%s','%s')", EmailInput.getText(), Username.getText(), PasswordInput.getText()),true);
             if(rs.next()){
                 LocalStorage.getInstance().setUser(new User(rs.getInt("id"), rs.getString("username")));
-                UtilsClass.navigate(SigninButton,getClass().getResource("../fxml/dashboard.fxml"));
+                UtilsClass.navigate(SignupButton,getClass().getResource("../fxml/dashboard.fxml"));
             }
             errorMessage.setText("Please Provide Valid Credentials");
         }catch (Exception e){
@@ -50,9 +52,9 @@ public class LoginController implements Initializable {
     }
 
     @FXML
-    public void gosignup(ActionEvent event){
+    public void gosignin(ActionEvent event) {
         try{
-        UtilsClass.navigate(SigninButton,getClass().getResource("../fxml/signup.fxml"));
+        UtilsClass.navigate(SignupButton,getClass().getResource("../fxml/login.fxml"));
         }catch (Exception e){
             e.printStackTrace();
         }
